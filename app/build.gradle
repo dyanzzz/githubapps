@@ -104,12 +104,6 @@ dependencies {
     implementation 'io.github.inflationx:calligraphy3:3.1.1'
     implementation 'io.github.inflationx:viewpump:2.0.3'
 
-    //printer
-    implementation 'pub.devrel:easypermissions:3.0.0'
-    implementation files('libs/EbPrinter.jar')
-    implementation files('libs/bluetoothsdk.jar')
-    implementation files('libs/ZSDK_API.jar')
-
     // navigation
     def navigation = '2.4.2'
     implementation "androidx.navigation:navigation-fragment-ktx:$navigation"
