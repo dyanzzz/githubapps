@@ -1,8 +1,10 @@
 package com.accenture.githubapps.di
 
+import android.app.Application
 import com.accenture.githubapps.BuildConfig
 import com.accenture.githubapps.api.AppService
 import com.accenture.githubapps.api.AuthInterceptor
+import com.accenture.githubapps.data.AppDatabase
 import com.google.gson.GsonBuilder
 import dagger.Module
 import dagger.Provides
@@ -57,14 +59,14 @@ class AppModule {
     }
 
     /* --------------------------------- Provide Local Database Data Source ----------------------*/
-    /*@Singleton
+    @Singleton
     @Provides
-    fun provideDb(app: Application) = AppDatabase.getInstance(app)*/
+    fun provideDb(app: Application) = AppDatabase.getInstance(app)
 
     /* --------------------------------- Provide DAO FastOne ----------------------*/
-    /*@Singleton
+    @Singleton
     @Provides
-    fun provideInsertMasterData(db: AppDatabase) = db.insertMasterData()*/
+    fun provideFavoriteDao(db: AppDatabase) = db.favoriteDao()
 
     @CoroutineScopeIO
     @Provides

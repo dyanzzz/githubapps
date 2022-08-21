@@ -1,26 +1,23 @@
 package com.accenture.githubapps.features.detail.ui
 
 import android.os.Bundle
-import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.accenture.githubapps.data.model.Follower
 import com.accenture.githubapps.databinding.FragmentFollowBinding
 import com.accenture.githubapps.di.Injectable
 import com.accenture.githubapps.di.injectViewModel
-import com.accenture.githubapps.extension.visible
 import com.accenture.githubapps.utils.HelperLoading
-import com.bumptech.glide.Glide
 import dagger.android.AndroidInjection
 import timber.log.Timber
 import javax.inject.Inject
 
 class FollowListFragment(
-    private val statusFollow: String,
+    private val isFollower: Boolean,
     private val userName: String,
 ): Fragment(), Injectable {
     @Inject
@@ -60,11 +57,19 @@ class FollowListFragment(
     }
 
     private fun initComponent() {
-        detailViewModel.setUserFollow(statusFollow, userName)
-        getAllFollower(statusFollow)
+        detailViewModel.getFollowerFavoriteUser(userName).observe(viewLifecycleOwner) { result ->
+            if (result.isNotEmpty()) {
+                // ambil dari room db
+                adapter.setList(result)
+            } else {
+                // ambil dari API
+                detailViewModel.setUserFollow(isFollower, userName)
+                getAllFollower()
+            }
+        }
     }
 
-    private fun getAllFollower(statusFollow: String) {
+    private fun getAllFollower() {
         adapter.clear()
         detailViewModel.getUserFollow().observe(viewLifecycleOwner) { result ->
             binding.apply {

@@ -14,6 +14,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.viewpager.widget.ViewPager
 import com.accenture.githubapps.R
+import com.accenture.githubapps.data.model.Follower
 import com.accenture.githubapps.databinding.FragmentDetailBinding
 import com.accenture.githubapps.databinding.ToolbarBinding
 import com.accenture.githubapps.di.Injectable
@@ -22,8 +23,10 @@ import com.accenture.githubapps.extension.inVisible
 import com.accenture.githubapps.extension.setCustomToolbar
 import com.accenture.githubapps.extension.visible
 import com.accenture.githubapps.utils.HelperLoading
+import com.accenture.githubapps.utils.SnackBarCustom
 import com.bumptech.glide.Glide
 import com.google.android.material.tabs.TabLayout
+import timber.log.Timber
 import java.lang.Exception
 import javax.inject.Inject
 
@@ -90,6 +93,7 @@ class DetailFragment: Fragment(), Injectable {
             binding.apply {
                 imgAvatar.inVisible()
                 imgFollowers.inVisible()
+                tabs.inVisible()
             }
             HelperLoading.displayLoadingWithText(requireContext(), "", false)
 
@@ -104,22 +108,144 @@ class DetailFragment: Fragment(), Injectable {
 
     private fun getUserDetail() {
         try {
-            detailViewModel.getUserDetail().observe(viewLifecycleOwner) { result ->
+            binding.apply {
+                val count = detailViewModel.checkUserDetailFavorite(username)
+                var isChecked = false
+
+                if (count > 0) {
+                    Timber.e("Get data from room")
+                    detailViewModel.getFavoriteUserDetail(username).observe(viewLifecycleOwner){ result ->
+                        Timber.e(result.name)
+                        HelperLoading.hideLoading()
+                        imgAvatar.visible()
+                        imgFollowers.visible()
+                        tabs.visible()
+
+                        tvUsername.text = result.login.ifEmpty { "" }
+                        tvName.text = result.name?.ifEmpty { "" }
+
+                        tvFollowers.text = "Followers ${result.followers.toString().ifEmpty{ "" }}"
+                        tvFollowing.text = "Following ${result.following.toString().ifEmpty{ "" }}"
+
+                        Glide.with(root)
+                            .load(result.avatar_url)
+                            .centerCrop()
+                            .into(imgAvatar)
+
+                        toggleFavorite.setOnClickListener {
+                            isChecked = !isChecked
+                            if (isChecked) {
+                                detailViewModel.postUserFavorite(result)
+                                saveFollower(true)
+                                saveFollower(false)
+
+                                SnackBarCustom.snackBarIconInfo(
+                                    root, layoutInflater, requireContext(),
+                                    "I like ${result.name}",
+                                    R.drawable.ic_close_white, R.color.green_500
+                                )
+                            } else {
+                                detailViewModel.removeUserFavorite(username)
+                                SnackBarCustom.snackBarIconInfo(
+                                    root, layoutInflater, requireContext(),
+                                    "I don't like ${result.name}",
+                                    R.drawable.ic_close_white, R.color.red_500
+                                )
+                            }
+
+                            toggleFavorite.isChecked = isChecked
+                        }
+                    }
+                } else {
+                    Timber.e("Get data from API")
+                    detailViewModel.getUserDetail().observe(viewLifecycleOwner) { result ->
+
+                        HelperLoading.hideLoading()
+                        imgAvatar.visible()
+                        imgFollowers.visible()
+                        tabs.visible()
+
+                        tvUsername.text = result.login.ifEmpty { "" }
+                        tvName.text = result.name?.ifEmpty { "" }
+
+                        tvFollowers.text = "Followers ${result.followers.toString().ifEmpty{ "" }}"
+                        tvFollowing.text = "Following ${result.following.toString().ifEmpty{ "" }}"
+
+                        Glide.with(root)
+                            .load(result.avatar_url)
+                            .centerCrop()
+                            .into(imgAvatar)
+
+                        toggleFavorite.setOnClickListener {
+                            isChecked = !isChecked
+                            if (isChecked) {
+                                detailViewModel.postUserFavorite(result)
+                                saveFollower(true)
+                                saveFollower(false)
+                                SnackBarCustom.snackBarIconInfo(
+                                    root, layoutInflater, requireContext(),
+                                    "I like ${result.name}",
+                                    R.drawable.ic_close_white, R.color.green_500
+                                )
+                            } else {
+                                detailViewModel.removeUserFavorite(username)
+                                SnackBarCustom.snackBarIconInfo(
+                                    root, layoutInflater, requireContext(),
+                                    "I don't like ${result.name}",
+                                    R.drawable.ic_close_white, R.color.red_500
+                                )
+                            }
+                            toggleFavorite.isChecked = isChecked
+                        }
+                    }
+                }
+
+                Timber.e(count.toString())
+                if (count > 0) {
+                    toggleFavorite.isChecked = true
+                    isChecked = true
+                } else {
+                    toggleFavorite.isChecked = false
+                    isChecked = false
+                }
+            }
+        } catch (err: Exception) {
+            HelperLoading.hideLoading()
+            Toast.makeText(requireContext(), "Error : ${err.message}", Toast.LENGTH_LONG).show()
+        }
+    }
+
+    private fun saveFollower(isFollower: Boolean) {
+        try {
+            detailViewModel.setUserFollow(isFollower, username)
+            detailViewModel.getUserFollow().observe(viewLifecycleOwner) { result ->
                 binding.apply {
-                    HelperLoading.hideLoading()
-                    imgAvatar.visible()
-                    imgFollowers.visible()
-
-                    tvUsername.text = result.login.ifEmpty { "" }
-                    tvName.text = result.name?.ifEmpty { "" }
-
-                    tvFollowers.text = "Followers ${result.followers.toString().ifEmpty{ "" }}"
-                    tvFollowing.text = "Following ${result.following.toString().ifEmpty{ "" }}"
-
-                    Glide.with(root)
-                        .load(result.avatar_url)
-                        .centerCrop()
-                        .into(imgAvatar)
+                    if (result.isNotEmpty()) {
+                        result.forEach { data ->
+                            val follower = Follower(
+                                id = null,
+                                login = data.login,
+                                avatar_url = data.avatar_url,
+                                gravatar_id = data.gravatar_id,
+                                url = data.url,
+                                html_url = data.html_url,
+                                followers_url = data.followers_url,
+                                following_url = data.following_url,
+                                gists_url = data.gists_url,
+                                starred_url = data.starred_url,
+                                subscriptions_url = data.subscriptions_url,
+                                organizations_url = data.organizations_url,
+                                repos_url = data.repos_url,
+                                events_url = data.received_events_url,
+                                received_events_url = data.received_events_url,
+                                type = data.type,
+                                site_admin = data.site_admin,
+                                owner = username,
+                                isFollower = isFollower
+                            )
+                            detailViewModel.postFollowerFavoriteUser(follower)
+                        }
+                    }
                 }
             }
         } catch (err: Exception) {
@@ -131,8 +257,8 @@ class DetailFragment: Fragment(), Injectable {
     private fun setupViewPager(viewPager: ViewPager) {
         val adapter = ViewPagerCustomerListAdapter(childFragmentManager)
 
-        adapter.addFragment(FollowListFragment("Followers", username), "Followers")
-        adapter.addFragment(FollowListFragment("Following", username), "Following")
+        adapter.addFragment(FollowListFragment(true, username), "Followers")
+        adapter.addFragment(FollowListFragment(false, username), "Following")
         viewPager.adapter = adapter
     }
 

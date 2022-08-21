@@ -5,11 +5,9 @@ import androidx.room.Entity
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
-@Entity(primaryKeys = [("id")])
 data class User(
     val login: String,
     val id: Int,
-    val node_id: String,
     val avatar_url: String,
     val gravatar_id: String,
     val url: String,
@@ -21,7 +19,7 @@ data class User(
     val subscriptions_url: String,
     val organizations_url: String,
     val repos_url: String,
-    val vents_url: String,
+    val events_url: String,
     val received_events_url: String,
     val type: String,
     val site_admin: Boolean
