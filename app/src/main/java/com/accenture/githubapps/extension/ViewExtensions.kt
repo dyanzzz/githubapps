@@ -1,4 +1,4 @@
-package com.accenture.githubapps.ui
+package com.accenture.githubapps.extension
 
 import android.app.Activity
 import android.view.View
@@ -34,4 +34,16 @@ fun ProgressBar.hide() {
 
 fun ProgressBar.show() {
     visibility = View.VISIBLE
+}
+
+fun View.visible() {
+    visibility = View.VISIBLE
+}
+
+fun View.inVisible() {
+    visibility = View.INVISIBLE
+}
+
+fun View.gone() {
+    visibility = View.GONE
 }

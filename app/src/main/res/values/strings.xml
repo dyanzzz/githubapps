@@ -11,4 +11,7 @@
     <string name="title_dashboard">Home</string>
     <string name="home">Home</string>
     <string name="hi">"Hi, "</string>
+    <string name="popular">Popular</string>
+    <string name="favorite">Favorite</string>
+    <string name="search">Search…</string>
 </resources>

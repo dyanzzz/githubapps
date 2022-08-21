@@ -6,7 +6,12 @@ import androidx.lifecycle.liveData
 import androidx.lifecycle.map
 import com.accenture.githubapps.data.Result.Status.ERROR
 import com.accenture.githubapps.data.Result.Status.SUCCESS
+import com.accenture.githubapps.data.model.User
+import com.accenture.githubapps.data.model.UserResponse
 import kotlinx.coroutines.Dispatchers
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 /**
  * The database serves as the single source of truth.
@@ -42,7 +47,6 @@ fun <A> resultLiveDataFetchInsert(networkCall: suspend () -> Result<A>,
         val responseStatus = networkCall.invoke()
         if (responseStatus.status == SUCCESS) {
             saveCallResult(responseStatus.data!!)
-            emit(Result.success(responseStatus.data!!))
         } else if (responseStatus.status == ERROR) {
             emit(Result.error<A>(responseStatus.message!!))
         }
@@ -95,3 +99,35 @@ fun <T> resultMutableLiveDataRemote(
             emit(Result.error<T>(responseStatus.message!!))
         }
     } as MutableLiveData<Result<T>>
+
+fun <T> resultMutableLiveDataRemoteByPass(
+    liveDataList: MutableLiveData<T>,
+    service: Call<T>
+) {
+    val call: Call<T> = service
+    call.enqueue(object : Callback<T> {
+        override fun onFailure(call: Call<T>, t: Throwable) {
+            liveDataList.postValue(null)
+        }
+
+        override fun onResponse(call: Call<T>, response: Response<T>) {
+            liveDataList.postValue(response.body())
+        }
+    })
+}
+
+fun resultMutableLiveDataRemoteByPassSearch(
+    liveDataList: MutableLiveData<ArrayList<User>>,
+    service: Call<UserResponse>
+) {
+    val call: Call<UserResponse> = service
+    call.enqueue(object : Callback<UserResponse> {
+        override fun onFailure(call: Call<UserResponse>, t: Throwable) {
+            liveDataList.postValue(null)
+        }
+
+        override fun onResponse(call: Call<UserResponse>, response: Response<UserResponse>) {
+            liveDataList.postValue(response.body()?.items)
+        }
+    })
+}
