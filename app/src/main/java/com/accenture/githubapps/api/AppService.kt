@@ -2,6 +2,7 @@ package com.accenture.githubapps.api
 
 import com.accenture.githubapps.data.model.FavoriteUser
 import com.accenture.githubapps.data.model.User
+import com.accenture.githubapps.data.model.UserResponse
 import retrofit2.Call
 import retrofit2.http.*
 
@@ -15,7 +16,7 @@ interface AppService {
     @GET("search/users")
     fun getSearchUser(
         @Query("q") query: String
-    ): Call<FavoriteUser>
+    ): Call<UserResponse>
 
     @GET("users/{username}")
     fun getUserDetail(
