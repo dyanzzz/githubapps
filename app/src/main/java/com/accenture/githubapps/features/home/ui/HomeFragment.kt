@@ -13,6 +13,7 @@ import com.accenture.githubapps.databinding.FragmentHomeBinding
 import com.accenture.githubapps.di.Injectable
 import com.accenture.githubapps.di.injectViewModel
 import com.accenture.githubapps.utils.HelperLoading
+import com.google.android.material.tabs.TabLayout
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -39,7 +40,6 @@ class HomeFragment: Fragment(), Injectable {
     ): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         context ?: return binding.root
-        setHasOptionsMenu(true)
 
         homeViewModel = injectViewModel(viewModelFactory)
 
@@ -54,6 +54,8 @@ class HomeFragment: Fragment(), Injectable {
         setHasOptionsMenu(true)
 
         _binding = FragmentHomeBinding.bind(view)
+
+        setDataListPopular()
 
         binding.apply {
             layoutManager = LinearLayoutManager(activity)
@@ -95,13 +97,34 @@ class HomeFragment: Fragment(), Injectable {
                     Toast.makeText(requireContext(), "Error : $e", Toast.LENGTH_LONG).show()
                 }
             }
+
+            tabLayout.addOnTabSelectedListener(object: TabLayout.OnTabSelectedListener {
+                override fun onTabSelected(tab: TabLayout.Tab?) {
+                    if (tab?.position == 0){
+                        setDataListPopular()
+                    } else {
+                        setDataListFavorite()
+                    }
+                }
+
+                override fun onTabReselected(tab: TabLayout.Tab?) {
+
+                }
+
+                override fun onTabUnselected(tab: TabLayout.Tab?) {
+
+                }
+            })
         }
     }
 
-    override fun onStart() {
-        super.onStart()
-
-        setDataListPopular()
+    private fun setDataListFavorite() {
+        try {
+            adapter.clear()
+        } catch (e: Exception) {
+            Timber.e("Error setListSs : $e")
+            Toast.makeText(requireContext(), "Error : $e", Toast.LENGTH_LONG).show()
+        }
     }
 
     private fun setDataListPopular() {
@@ -125,7 +148,7 @@ class HomeFragment: Fragment(), Injectable {
     private fun getDataListPopular() {
         try {
             isLoading = true
-            homeViewModel.getListPopular().observe(this) { result ->
+            homeViewModel.getListPopular().observe(viewLifecycleOwner) { result ->
                 if (result != null) {
                     binding.rv.visibility = View.VISIBLE
                     Timber.e(result.toString())
