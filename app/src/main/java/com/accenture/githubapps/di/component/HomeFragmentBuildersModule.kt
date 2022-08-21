@@ -1,5 +1,6 @@
 package com.accenture.githubapps.di.component
 
+import com.accenture.githubapps.features.detail.ui.DetailFragment
 import com.accenture.githubapps.features.home.ui.*
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
@@ -9,4 +10,7 @@ import dagger.android.ContributesAndroidInjector
 abstract class HomeFragmentBuildersModule {
     @ContributesAndroidInjector
     abstract fun contributeHomeFragment(): HomeFragment
+
+    @ContributesAndroidInjector
+    abstract fun contributeDetailFragment(): DetailFragment
 }

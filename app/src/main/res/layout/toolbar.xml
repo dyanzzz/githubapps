@@ -12,6 +12,7 @@
         android:theme="@style/Toolbar.Light"
         app:contentInsetStartWithNavigation="0dp"
         app:layout_scrollFlags="scroll|enterAlways"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        tools:title="Dashboard"/>
 
 </merge>

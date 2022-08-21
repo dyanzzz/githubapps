@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.accenture.githubapps.data.model.User
 import com.accenture.githubapps.databinding.FragmentHomeBinding
@@ -154,7 +155,6 @@ class HomeFragment: Fragment(), Injectable {
                     Timber.e(result.toString())
                     HelperLoading.hideLoading()
 
-                    //binding.noDataScreen.root.visibility = View.VISIBLE
                     totalPage = 0
 
                     binding.rv.visibility = View.VISIBLE
@@ -179,7 +179,8 @@ class HomeFragment: Fragment(), Injectable {
     private fun setOnClick() {
         adapter.setHomeCallback(object : HomeCallback {
             override fun onClick(data: User) {
-                Timber.e(data.toString())
+                val direction = HomeFragmentDirections.actionHomeFragmentToDetailFragment(data.login)
+                requireView().findNavController().navigate(direction)
             }
         })
     }
