@@ -7,13 +7,13 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.accenture.githubapps.data.model.Follower
-import com.accenture.githubapps.databinding.FragmentFollowBinding
+import com.accenture.githubapps.databinding.FragmentListBinding
 import com.accenture.githubapps.di.Injectable
 import com.accenture.githubapps.di.injectViewModel
+import com.accenture.githubapps.extension.gone
+import com.accenture.githubapps.extension.visible
 import com.accenture.githubapps.utils.HelperLoading
 import dagger.android.AndroidInjection
-import timber.log.Timber
 import javax.inject.Inject
 
 class FollowListFragment(
@@ -24,7 +24,7 @@ class FollowListFragment(
     lateinit var viewModelFactory: ViewModelProvider.Factory
     private lateinit var detailViewModel: DetailViewModel
 
-    private var _binding: FragmentFollowBinding? = null
+    private var _binding: FragmentListBinding? = null
     private val binding get() = _binding!!
 
     private lateinit var adapter: FollowAdapter
@@ -35,7 +35,7 @@ class FollowListFragment(
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentFollowBinding.inflate(inflater, container, false)
+        _binding = FragmentListBinding.inflate(inflater, container, false)
         context ?: return binding.root
 
         AndroidInjection.inject(requireActivity())
@@ -57,14 +57,18 @@ class FollowListFragment(
     }
 
     private fun initComponent() {
-        detailViewModel.getFollowerFavoriteUser(userName).observe(viewLifecycleOwner) { result ->
-            if (result.isNotEmpty()) {
-                // ambil dari room db
-                adapter.setList(result)
-            } else {
-                // ambil dari API
-                detailViewModel.setUserFollow(isFollower, userName)
-                getAllFollower()
+        binding.apply {
+            progressBar.visible()
+            detailViewModel.getFollowerFavoriteUser(userName).observe(viewLifecycleOwner) { result ->
+                progressBar.gone()
+                if (result.isNotEmpty()) {
+                    // ambil dari room db
+                    adapter.setList(result)
+                } else {
+                    // ambil dari API
+                    detailViewModel.setUserFollow(isFollower, userName)
+                    getAllFollower()
+                }
             }
         }
     }

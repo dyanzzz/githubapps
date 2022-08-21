@@ -6,6 +6,8 @@ import androidx.lifecycle.liveData
 import androidx.lifecycle.map
 import com.accenture.githubapps.data.Result.Status.ERROR
 import com.accenture.githubapps.data.Result.Status.SUCCESS
+import com.accenture.githubapps.data.model.User
+import com.accenture.githubapps.data.model.UserResponse
 import kotlinx.coroutines.Dispatchers
 import retrofit2.Call
 import retrofit2.Callback
@@ -114,3 +116,18 @@ fun <T> resultMutableLiveDataRemoteByPass(
     })
 }
 
+fun resultMutableLiveDataRemoteByPassSearch(
+    liveDataList: MutableLiveData<ArrayList<User>>,
+    service: Call<UserResponse>
+) {
+    val call: Call<UserResponse> = service
+    call.enqueue(object : Callback<UserResponse> {
+        override fun onFailure(call: Call<UserResponse>, t: Throwable) {
+            liveDataList.postValue(null)
+        }
+
+        override fun onResponse(call: Call<UserResponse>, response: Response<UserResponse>) {
+            liveDataList.postValue(response.body()?.items)
+        }
+    })
+}
