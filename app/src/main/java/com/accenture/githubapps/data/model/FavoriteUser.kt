@@ -2,13 +2,15 @@ package com.accenture.githubapps.data.model
 
 import android.os.Parcelable
 import androidx.room.Entity
+import androidx.room.PrimaryKey
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
-@Entity(primaryKeys = [("id")])
-data class UserDetail(
-  val login: String,
+@Entity
+data class FavoriteUser(
+  @PrimaryKey(autoGenerate = true)
   val id: Int,
+  val login: String,
   val avatar_url: String,
   val gravatar_id: String,
   val url: String,

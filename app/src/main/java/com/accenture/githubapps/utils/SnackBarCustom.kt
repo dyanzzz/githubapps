@@ -14,7 +14,6 @@ class SnackBarCustom {
         fun snackBarIconInfo(
             parentView: View,
             layoutInflater: LayoutInflater,
-            ctx: Resources,
             context: Context,
             message: String,
             icon: Int,

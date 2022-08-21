@@ -5,13 +5,12 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import kotlinx.android.parcel.Parcelize
 
-@Entity
 @Parcelize
+@Entity
 data class Follower(
   @PrimaryKey(autoGenerate = true)
-  val number: Int,
+  val id: Int?,
   val login: String,
-  val id: Int,
   val avatar_url: String,
   val gravatar_id: String,
   val url: String,
@@ -28,6 +27,5 @@ data class Follower(
   val type: String,
   val site_admin: Boolean,
   var owner: String,
-  var page: Int,
   var isFollower: Boolean
 ) : Parcelable

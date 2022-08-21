@@ -91,7 +91,11 @@ class HomeFragment: Fragment(), Injectable {
                 try {
                     adapter.clear()
 
-                    homeViewModel.setListPopular()
+                    if (tabLayout.selectedTabPosition== 0) {
+                        setDataListPopular()
+                    } else {
+                        setDataListFavorite()
+                    }
                     swipe.isRefreshing= false
                 } catch (e: Exception){
                     Timber.e("Error setListSs : $e")
@@ -101,6 +105,7 @@ class HomeFragment: Fragment(), Injectable {
 
             tabLayout.addOnTabSelectedListener(object: TabLayout.OnTabSelectedListener {
                 override fun onTabSelected(tab: TabLayout.Tab?) {
+                    adapter.clear()
                     if (tab?.position == 0){
                         setDataListPopular()
                     } else {
@@ -120,11 +125,11 @@ class HomeFragment: Fragment(), Injectable {
     }
 
     private fun setDataListFavorite() {
-        try {
-            adapter.clear()
-        } catch (e: Exception) {
-            Timber.e("Error setListSs : $e")
-            Toast.makeText(requireContext(), "Error : $e", Toast.LENGTH_LONG).show()
+        adapter.clear()
+        homeViewModel.getAllFavoriteUsers().observe(viewLifecycleOwner) { result ->
+            Timber.e(result.toString())
+            binding.rv.visibility = View.VISIBLE
+            adapter.setList(result)
         }
     }
 
@@ -135,6 +140,11 @@ class HomeFragment: Fragment(), Injectable {
 
             HelperLoading.displayLoadingWithText(requireContext(), "", false)
 
+            homeViewModel.getCheckFavoriteUsers().observe(viewLifecycleOwner) { userName ->
+                if(userName.isNotEmpty()) {
+                    homeViewModel.getRemoveFavoriteUsers(userName[0])
+                }
+            }
             homeViewModel.setListPopular()
 
             getDataListPopular()
@@ -151,7 +161,6 @@ class HomeFragment: Fragment(), Injectable {
             isLoading = true
             homeViewModel.getListPopular().observe(viewLifecycleOwner) { result ->
                 if (result != null) {
-                    binding.rv.visibility = View.VISIBLE
                     Timber.e(result.toString())
                     HelperLoading.hideLoading()
 
@@ -164,6 +173,7 @@ class HomeFragment: Fragment(), Injectable {
                     isLoading = false
                     Timber.d("###-- Success get List")
                 } else {
+                    HelperLoading.hideLoading()
                     binding.rv.visibility = View.GONE
                     Toast.makeText(requireContext(), "Data Not Found", Toast.LENGTH_LONG).show()
                 }
