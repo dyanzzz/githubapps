@@ -64,11 +64,7 @@ class AppModule {
     /* --------------------------------- Provide DAO FastOne ----------------------*/
     /*@Singleton
     @Provides
-    fun provideInsertMasterData(db: AppDatabase) = db.insertMasterData()
-
-    @Singleton
-    @Provides
-    fun provideAbsentInfoDao(db: AppDatabase) = db.absentInfoDao()*/
+    fun provideInsertMasterData(db: AppDatabase) = db.insertMasterData()*/
 
     @CoroutineScopeIO
     @Provides

@@ -7,6 +7,9 @@ import androidx.lifecycle.map
 import com.accenture.githubapps.data.Result.Status.ERROR
 import com.accenture.githubapps.data.Result.Status.SUCCESS
 import kotlinx.coroutines.Dispatchers
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 /**
  * The database serves as the single source of truth.
@@ -42,7 +45,6 @@ fun <A> resultLiveDataFetchInsert(networkCall: suspend () -> Result<A>,
         val responseStatus = networkCall.invoke()
         if (responseStatus.status == SUCCESS) {
             saveCallResult(responseStatus.data!!)
-            emit(Result.success(responseStatus.data!!))
         } else if (responseStatus.status == ERROR) {
             emit(Result.error<A>(responseStatus.message!!))
         }
@@ -95,3 +97,20 @@ fun <T> resultMutableLiveDataRemote(
             emit(Result.error<T>(responseStatus.message!!))
         }
     } as MutableLiveData<Result<T>>
+
+fun <T> resultMutableLiveDataRemoteByPass(
+    liveDataList: MutableLiveData<T>,
+    service: Call<T>
+) {
+    val call: Call<T> = service
+    call.enqueue(object : Callback<T> {
+        override fun onFailure(call: Call<T>, t: Throwable) {
+            liveDataList.postValue(null)
+        }
+
+        override fun onResponse(call: Call<T>, response: Response<T>) {
+            liveDataList.postValue(response.body())
+        }
+    })
+}
+
