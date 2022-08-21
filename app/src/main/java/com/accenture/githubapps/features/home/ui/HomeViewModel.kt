@@ -16,6 +16,6 @@ class HomeViewModel @Inject constructor(private val repository: HomeRepository):
     }
 
     fun setListPopular() {
-        repository.requestListPopulars(_listPopular)
+        repository.requestList(_listPopular)
     }
 }

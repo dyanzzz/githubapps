@@ -40,16 +40,29 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <ImageView
-        android:id="@+id/img_avatar"
-        android:layout_width="82dp"
-        android:layout_height="82dp"
+    <androidx.cardview.widget.CardView
+        android:id="@+id/card_img_avatar"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
         android:layout_marginTop="32dp"
-        android:contentDescription="@string/app_name"
-        android:src="@drawable/image_12"
+        android:clipToPadding="true"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="0dp"
+        app:cardPreventCornerOverlap="false"
+        app:cardUseCompatPadding="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/appbar" />
+        app:layout_constraintTop_toBottomOf="@+id/appbar">
+
+        <ImageView
+            android:id="@+id/img_avatar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:contentDescription="@string/app_name"
+            android:scaleType="centerCrop"
+            android:src="@drawable/image_12" />
+
+    </androidx.cardview.widget.CardView>
 
     <TextView
         android:id="@+id/tv_name"
@@ -60,17 +73,17 @@
         android:textColor="@color/black"
         android:textStyle="bold"
         android:textSize="18sp"
-        app:layout_constraintEnd_toEndOf="@+id/img_avatar"
-        app:layout_constraintStart_toStartOf="@+id/img_avatar"
-        app:layout_constraintTop_toBottomOf="@+id/img_avatar" />
+        app:layout_constraintEnd_toEndOf="@+id/card_img_avatar"
+        app:layout_constraintStart_toStartOf="@+id/card_img_avatar"
+        app:layout_constraintTop_toBottomOf="@+id/card_img_avatar" />
 
     <TextView
         android:id="@+id/tv_username"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        app:layout_constraintEnd_toEndOf="@+id/img_avatar"
-        app:layout_constraintStart_toStartOf="@+id/img_avatar"
+        app:layout_constraintEnd_toEndOf="@+id/card_img_avatar"
+        app:layout_constraintStart_toStartOf="@+id/card_img_avatar"
         app:layout_constraintTop_toBottomOf="@+id/tv_name"
         tools:text="username" />
 
@@ -80,8 +93,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="@+id/img_avatar"
-        app:layout_constraintStart_toStartOf="@+id/img_avatar"
+        app:layout_constraintEnd_toEndOf="@+id/card_img_avatar"
+        app:layout_constraintStart_toStartOf="@+id/card_img_avatar"
         app:layout_constraintTop_toBottomOf="@+id/tv_username">
 
         <ImageView

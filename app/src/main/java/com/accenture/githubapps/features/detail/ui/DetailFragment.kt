@@ -7,9 +7,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import androidx.viewpager.widget.ViewPager
 import com.accenture.githubapps.R
 import com.accenture.githubapps.databinding.FragmentDetailBinding
 import com.accenture.githubapps.databinding.ToolbarBinding
@@ -20,6 +23,7 @@ import com.accenture.githubapps.extension.setCustomToolbar
 import com.accenture.githubapps.extension.visible
 import com.accenture.githubapps.utils.HelperLoading
 import com.bumptech.glide.Glide
+import com.google.android.material.tabs.TabLayout
 import java.lang.Exception
 import javax.inject.Inject
 
@@ -52,6 +56,14 @@ class DetailFragment: Fragment(), Injectable {
         username = args.username
 
         setUserDetail()
+
+        binding.apply {
+            val viewPager: ViewPager = viewPager
+            val tabLayout: TabLayout = tabs
+
+            setupViewPager(viewPager)
+            tabLayout.setupWithViewPager(viewPager)
+        }
 
         return binding.root
     }
@@ -113,6 +125,36 @@ class DetailFragment: Fragment(), Injectable {
         } catch (err: Exception) {
             HelperLoading.hideLoading()
             Toast.makeText(requireContext(), "Error : ${err.message}", Toast.LENGTH_LONG).show()
+        }
+    }
+
+    private fun setupViewPager(viewPager: ViewPager) {
+        val adapter = ViewPagerCustomerListAdapter(childFragmentManager)
+
+        adapter.addFragment(FollowListFragment("Followers", username), "Followers")
+        adapter.addFragment(FollowListFragment("Following", username), "Following")
+        viewPager.adapter = adapter
+    }
+
+    private class ViewPagerCustomerListAdapter(fm: FragmentManager): FragmentStatePagerAdapter(fm) {
+        private val mFragmentList: MutableList<Fragment> = ArrayList()
+        private val mFragmentTitleList: MutableList<String> = ArrayList()
+
+        override fun getItem(position: Int): Fragment {
+            return mFragmentList[position]
+        }
+
+        override fun getCount(): Int {
+            return mFragmentList.size
+        }
+
+        override fun getPageTitle(position: Int): CharSequence {
+            return mFragmentTitleList[position]
+        }
+
+        fun addFragment(fragment: Fragment, title: String) {
+            mFragmentList.add(fragment)
+            mFragmentTitleList.add(title)
         }
     }
 }

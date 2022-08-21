@@ -11,12 +11,16 @@ import javax.inject.Inject
 class DetailViewModel @Inject constructor(private val repository: DetailRepository): ViewModel() {
     // === List
     private var _userDetail = MutableLiveData<UserDetail>()
-
     fun getUserDetail(): MutableLiveData<UserDetail> {
         return _userDetail
     }
-
     fun setUserDetail(username: String) {
         repository.requestUserDetail(_userDetail, username)
+    }
+
+    private var _user = MutableLiveData<List<User>>()
+    fun getUserFollow(): MutableLiveData<List<User>> = _user
+    fun setUserFollow(statusFollow: String, username: String) {
+        repository.requestUserFollowers(_user, username, statusFollow)
     }
 }
