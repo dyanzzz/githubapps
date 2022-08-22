@@ -56,11 +56,7 @@
                     android:hint="@string/search"
                     android:imeOptions="actionSearch"
                     android:maxLines="1"
-                    android:singleLine="true">
-
-                    <requestFocus />
-
-                </EditText>
+                    android:singleLine="true"/>
 
                 <View
                     android:layout_width="@dimen/spacing_large"

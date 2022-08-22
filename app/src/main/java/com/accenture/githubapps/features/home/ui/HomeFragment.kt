@@ -149,12 +149,39 @@ class HomeFragment: Fragment(), Injectable {
 
             edtSearch.setOnKeyListener(View.OnKeyListener { v, keyCode, event ->
                 if (event.action === KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER) {
-                    hideKeyboard()
-                    tabLayout.getTabAt(2)?.select()
+                    val query = binding.edtSearch.text
+                    if (query.isNotEmpty()) {
+                        hideKeyboard()
+                        tabLayout.getTabAt(2)?.select()
+                        if (tabLayout.selectedTabPosition == 2) {
+                            if (query.isNotEmpty()) {
+                                adapter.clear()
+                                setDataListSearch(query.toString())
+                            }
+                        }
+                    } else {
+                        Toast.makeText(binding.root.context, "At least search with 1 word", Toast.LENGTH_LONG).show()
+                    }
                     return@OnKeyListener true
                 }
                 false
             })
+
+            btnSearch.setOnClickListener {
+                val query = binding.edtSearch.text
+                if (query.isNotEmpty()) {
+                    hideKeyboard()
+                    tabLayout.getTabAt(2)?.select()
+                    if (tabLayout.selectedTabPosition == 2) {
+                        if (query.isNotEmpty()) {
+                            adapter.clear()
+                            setDataListSearch(query.toString())
+                        }
+                    }
+                } else {
+                    Toast.makeText(binding.root.context, "At least search with 1 word", Toast.LENGTH_LONG).show()
+                }
+            }
 
         }
     }
